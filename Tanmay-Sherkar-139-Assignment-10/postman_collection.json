@@ -1,0 +1,312 @@
+{
+  "info": {
+    "name": "Car Rental & Fleet Management API",
+    "description": "Postman Collection for Assignment 10 Car Rental System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "vehicleId",
+      "value": "1"
+    },
+    {
+      "key": "rentalId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"driver@travel.com\",\n  \"password\": \"mypassword123\",\n  \"name\": \"David\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "  pm.collectionVariables.set('token', res.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"driver@travel.com\",\n  \"password\": \"mypassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "Get All Vehicles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"]
+            }
+          }
+        },
+        {
+          "name": "Get Vehicles with Filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles?category=SUV&status=available",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "SUV"
+                },
+                {
+                  "key": "status",
+                  "value": "available"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Vehicle Details by ID with Rentals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles", "{{vehicleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Vehicle (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Tesla\",\n  \"model\": \"Model 3\",\n  \"year\": 2024,\n  \"category\": \"Electric\",\n  \"daily_rate\": 4500,\n  \"fuel_type\": \"EV\",\n  \"seating_capacity\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles"]
+            }
+          }
+        },
+        {
+          "name": "Update Vehicle Rate and Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"daily_rate\": 4800,\n  \"status\": \"maintenance\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles", "{{vehicleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Vehicle",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "vehicles", "{{vehicleId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rentals",
+      "item": [
+        {
+          "name": "Book Vehicle (Initial 2026-05-01 to 2026-05-05)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle_id\": 1,\n  \"start_date\": \"2026-05-01\",\n  \"end_date\": \"2026-05-05\",\n  \"customer_name\": \"David\",\n  \"customer_email\": \"david@test.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rentals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rentals"]
+            }
+          }
+        },
+        {
+          "name": "Book Vehicle - Collision Test (2026-05-03 to 2026-05-07 Expect 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle_id\": 1,\n  \"start_date\": \"2026-05-03\",\n  \"end_date\": \"2026-05-07\",\n  \"customer_name\": \"David\",\n  \"customer_email\": \"david@test.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/rentals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rentals"]
+            }
+          }
+        },
+        {
+          "name": "Get My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/rentals/my-bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rentals", "my-bookings"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Rental",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/rentals/{{rentalId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rentals", "{{rentalId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Complete Rental (Car Return)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/rentals/{{rentalId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rentals", "{{rentalId}}", "complete"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
